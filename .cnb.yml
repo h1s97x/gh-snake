@@ -1,14 +1,71 @@
-# 推送到 cnb.cool 时，自动镜像到对应的 GitHub 仓库 h1s97x/gh-snake
-#
-# 前置条件：在本 cnb 仓库的「设置 → 环境变量 / 机密」中添加一个名为
-# GITHUB_TOKEN 的「保密」环境变量，值为具备 h1s97x/gh-snake 仓库
-# 写权限的 GitHub Personal Access Token（建议用细粒度 token，仅勾 repo）。
+# 双向同步总览：
+#   CNB → GitHub：push 到 main 时用 tencentcom/git-sync 自动同步（见 main.push）
+#   GitHub → CNB：由 .github/workflows/sync-cnb.yml 兜底反向同步（直接改 GitHub 再回灌 CNB），
+#     排除 .cnb*/.github/ 避免同步环死循环。
+# 敏感信息（GITHUB_USERNAME / GITHUB_TOKEN）存放在密钥仓库 secret-env，
+# 通过 imports 引用，本仓库无需单独配置。
 main:
+  # push 到 main 后自动同步到 GitHub
   push:
-    - name: mirror to github
+    - name: sync-to-github
+      imports:
+        - https://cnb.cool/h1s97x/secret-env/-/blob/main/env.yml
       stages:
-        - name: push to github
+        - name: sync to github
+          image: tencentcom/git-sync
+          settings:
+            target_url: https://github.com/h1s97x/gh-snake.git
+            auth_type: https
+            username: ${GITHUB_USERNAME}
+            password: ${GITHUB_TOKEN}
+            branch: main
+            push_tags: true
+            # Rebase 模式：保留 GitHub 仓库特有平台文件（如 .github/workflows/*.yml），
+            # 同时避免无条件 force 覆盖远端新提交。
+            sync_mode: rebase
+
+  # PR 创建后自动分配处理人和审查人
+  pull_request:
+    - name: auto-assign-pr-owner
+      env:
+        PR_REVIEWER: h1s97x
+      stages:
+        - name: assign pr to owner
+          type: git:reviewer
+          options:
+            type: add-assignee
+            reviewers: ${PR_REVIEWER}
+        - name: add pr reviewer
+          type: git:reviewer
+          options:
+            type: add-reviewer-from-repo-members
+
+# 兜底分支：web_trigger / issue.* 等事件
+$:
+  # 手动触发：从 GitHub 拉取（GitHub → CNB）
+  # 使用 tencentcom/git-sync 插件 + sync_mode: pull
+  web_trigger_pull_from_github:
+    - name: web-trigger-pull-from-github
+      imports:
+        - https://cnb.cool/h1s97x/secret-env/-/blob/main/env.yml
+      stages:
+        - name: pull from github
+          image: tencentcom/git-sync
+          settings:
+            target_url: https://github.com/h1s97x/gh-snake.git
+            auth_type: https
+            username: ${GITHUB_USERNAME}
+            password: ${GITHUB_TOKEN}
+            sync_mode: pull
+
+  # Issue 创建后自动分配处理人
+  issue.open:
+    - name: auto-assign-issue-owner
+      env:
+        ISSUE_ASSIGNEE: h1s97x
+      stages:
+        - name: assign issue to owner
+          image: cnbcool/cnb-cli
           script: |
-            git config user.name "cnb-bot"
-            git config user.email "bot@cnb.cool"
-            GIT_TERMINAL_PROMPT=0 git push "https://${GITHUB_TOKEN}@github.com/h1s97x/gh-snake.git" HEAD:refs/heads/main
+            set -e
+            cnb issues add-assignees --assignees $ISSUE_ASSIGNEE
