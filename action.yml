@@ -38,7 +38,7 @@ runs:
     - uses: oven-sh/setup-bun@v2
       with:
         bun-version: latest
-    - run: bun src/cli.ts
+    - run: bun "${{ github.action_path }}/src/cli.ts"
       shell: bash
       env:
         INPUT_GITHUB_USER_NAME: ${{ inputs.github_user_name }}
