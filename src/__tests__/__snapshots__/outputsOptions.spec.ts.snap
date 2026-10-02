@@ -19,7 +19,7 @@ exports[`should parse path/to/out.svg 1`] = `
     "colorSnake": "purple",
     "sizeCell": 16,
     "sizeDot": 12,
-    "sizeDotBorderRadius": 2,
+    "sizeDotBorderRadius": 0,
   },
   "filename": "path/to/out.svg",
 }
@@ -44,7 +44,7 @@ exports[`should parse /out.svg?color_snake=orange&color_dots=#000,#111,#222,#333
     "colorSnake": "orange",
     "sizeCell": 16,
     "sizeDot": 12,
-    "sizeDotBorderRadius": 2,
+    "sizeDotBorderRadius": 0,
   },
   "filename": "/out.svg",
 }
@@ -69,7 +69,7 @@ exports[`should parse /out.svg?{"color_snake":"yellow","color_dots":["#000","#11
     "colorSnake": "yellow",
     "sizeCell": 16,
     "sizeDot": 12,
-    "sizeDotBorderRadius": 2,
+    "sizeDotBorderRadius": 0,
   },
   "filename": "/out.svg",
 }

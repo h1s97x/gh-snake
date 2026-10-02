@@ -5,7 +5,6 @@ import type { Grid, Color, Empty } from "../types";
 import type { Point } from "../types";
 import { createSnake } from "./snake";
 import { createGrid } from "./grid";
-import { createStack } from "./stack";
 import { h } from "./xml-utils";
 import { minifyCss } from "./css-utils";
 
@@ -68,8 +67,15 @@ export const createSvg = (
   drawOptions: DrawOptions,
   animationOptions: { stepDurationMs: number },
 ) => {
-  const width = (grid.width + 2) * drawOptions.sizeCell;
-  const height = (grid.height + 5) * drawOptions.sizeCell;
+  const { sizeCell, sizeDot } = drawOptions;
+  const width = (grid.width + 2) * sizeCell;
+
+  // 上下留白对称：内容（首行顶部到末行底部）上下各留 2 格
+  const padY = sizeCell * 2;
+  const contentTop = (sizeCell - sizeDot) / 2;
+  const contentBottom = (grid.height - 1) * sizeCell + (sizeCell + sizeDot) / 2;
+  const viewBoxMinY = contentTop - padY;
+  const height = contentBottom - contentTop + padY * 2;
 
   const duration = animationOptions.stepDurationMs * chain.length;
 
@@ -77,22 +83,10 @@ export const createSvg = (
 
   const elements = [
     createGrid(livingCells, drawOptions, duration),
-    createStack(
-      livingCells,
-      drawOptions,
-      grid.width * drawOptions.sizeCell,
-      (grid.height + 2) * drawOptions.sizeCell,
-      duration,
-    ),
     createSnake(chain, drawOptions, duration),
   ];
 
-  const viewBox = [
-    -drawOptions.sizeCell,
-    -drawOptions.sizeCell * 2,
-    width,
-    height,
-  ].join(" ");
+  const viewBox = [-sizeCell, viewBoxMinY, width, height].join(" ");
 
   const style =
     generateColorVar(drawOptions) +
