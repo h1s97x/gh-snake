@@ -53,14 +53,13 @@ bun src/cli.ts
 
 ## Contribution policy
 
-This project is conservative about changes to its public API and rendering
-behavior, because the generated SVG is consumed by many profile READMEs.
+This project is open to contributions.
 
-- **Issues** are very welcome — bug reports and feature requests help a lot.
-- **Pull requests** should be discussed in an issue first. API or rendering
-  changes are unlikely to be merged without prior agreement, since they can
-  break downstream consumers.
+- **Issues** and **pull requests** are both welcome.
+- Fork the repo, make your change, and open a PR against `main`.
 - Keep changes focused and add or adjust tests where relevant.
+- For larger or API/rendering changes, opening an issue first to discuss is
+  appreciated but not required.
 
 ## Running the tests
 

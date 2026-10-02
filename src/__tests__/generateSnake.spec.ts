@@ -29,7 +29,7 @@ it(
     const results = await generateSnakeAnimation(
       {
         platform: "github",
-        username: "platane",
+        username: "h1s97x",
         githubToken: process.env.GITHUB_TOKEN!,
       },
       outputs,

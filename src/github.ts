@@ -10,8 +10,8 @@
  * @param options
  *
  * @example
- *  getGithubUserContribution("platane", { from: "2019-01-01", to: "2019-12-31" })
- *  getGithubUserContribution("platane", { year: 2019 })
+ *  getGithubUserContribution("h1s97x", { from: "2019-01-01", to: "2019-12-31" })
+ *  getGithubUserContribution("h1s97x", { year: 2019 })
  *
  */
 export const getGithubUserContribution = async (
@@ -46,7 +46,7 @@ export const getGithubUserContribution = async (
     headers: {
       Authorization: `bearer ${o.githubToken}`,
       "Content-Type": "application/json",
-      "User-Agent": "me@platane.me",
+      "User-Agent": "h1s97x",
     },
     method: "POST",
     body: JSON.stringify({ variables, query }),
