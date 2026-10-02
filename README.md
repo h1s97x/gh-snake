@@ -81,3 +81,7 @@ For **dark mode** support on github, use this [special syntax](https://docs.gith
 This project does not accept pull request.
 
 Reporting or fixing issues is appreciated, but change in the API or implementation should be discussed in issue first and is likely not going be greenlighted.
+
+## License
+
+Distributed under the [MIT License](./LICENSE).
